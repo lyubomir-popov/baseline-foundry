@@ -5,6 +5,8 @@ export { generateBaselineGridOverlayCss, generateBaselineGridThemeOverrideCss } 
 export { initCodeSnippets } from "./code-snippet.js";
 export { initContextualMenus } from "./contextual-menu.js";
 export { initInPageNavigations } from "./in-page-navigation.js";
+export { setupImageComparison } from "./image-comparison.js";
+export type { ImageComparisonOptions, ImageComparisonMetadata, ImageComparisonController, ImageComparisonChangeDetail } from "./image-comparison.js";
 export { initInteractiveFeedback, initNotificationDismissals, initPasswordReveals } from "./interactive-feedback.js";
 export { initExpandingTables, initInteractiveTables, initMobileCardTables, initSortableTables } from "./interactive-tables.js";
 export { initListTree } from "./list-tree.js";

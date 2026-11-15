@@ -1,0 +1,25 @@
+{
+  "label": "before",
+  "cssSha256": "a6505f23cc5a33f56e30b1ca2c52fcf8ef874b1cc063c53e5a94acfd82f7a93f",
+  "value": "100",
+  "layers": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "clip": "none"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "clip": "inset(0px 0% 0px 0px)"
+    }
+  ],
+  "fit": [
+    {
+      "fit": "contain",
+      "loaded": true
+    },
+    {
+      "fit": "contain",
+      "loaded": true
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "chrome": "157.0.8103.52",
+  "runtimeHash": "9e6aabbce9b62902e481a599369c08675a4c938f203eab0992500d17ace618c3",
+  "cases": [
+    {
+      "kind": "text label",
+      "setup": {
+        "success": true,
+        "name": null
+      },
+      "snapshot": "- slider \"Visible comparison\": \"50\""
+    },
+    {
+      "kind": "empty label fallback",
+      "setup": {
+        "success": true,
+        "name": "Fallback"
+      },
+      "snapshot": "- slider \"Fallback\": \"50\""
+    },
+    {
+      "kind": "image alt label",
+      "setup": {
+        "success": false,
+        "error": "Error: Image comparison requires a named native range.",
+        "unchanged": true
+      },
+      "snapshot": "- slider \"Compare visual states\": \"50\""
+    },
+    {
+      "kind": "aria-label label",
+      "setup": {
+        "success": false,
+        "error": "Error: Image comparison requires a named native range.",
+        "unchanged": true
+      },
+      "snapshot": "- slider \"Compare visual states\": \"50\""
+    },
+    {
+      "kind": "label with aria-hidden text",
+      "setup": {
+        "success": true,
+        "name": null
+      },
+      "snapshot": "- slider: \"50\""
+    },
+    {
+      "kind": "labelledby aria-label target",
+      "setup": {
+        "success": false,
+        "error": "Error: Image comparison requires a named native range.",
+        "unchanged": true
+      },
+      "snapshot": "- slider \"Compare visual states\": \"50\""
+    },
+    {
+      "kind": "labelledby image alt",
+      "setup": {
+        "success": false,
+        "error": "Error: Image comparison requires a named native range.",
+        "unchanged": true
+      },
+      "snapshot": "- slider \"Compare visual states\": \"50\""
+    },
+    {
+      "kind": "display-none label text",
+      "setup": {
+        "success": true,
+        "name": null
+      },
+      "snapshot": "- slider \"Hidden text\": \"50\""
+    }
+  ]
+}

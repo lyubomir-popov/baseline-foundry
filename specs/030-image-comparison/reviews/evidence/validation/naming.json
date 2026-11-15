@@ -1,0 +1,210 @@
+{
+  "checks": 44,
+  "records": [
+    {
+      "label": "text label: browser computes consumer-owned native name",
+      "detail": "- slider \"Native text label\": \"50\""
+    },
+    {
+      "label": "text label: source/value/endpoint metadata preserve native name",
+      "detail": "- slider \"Native text label\": \"37\""
+    },
+    {
+      "label": "text label: runtime never writes consumer name attributes",
+      "detail": {}
+    },
+    {
+      "label": "text label: consumer can change native association during lifetime",
+      "detail": {}
+    },
+    {
+      "label": "text label: destroy preserves all external name/association edits",
+      "detail": {}
+    },
+    {
+      "label": "aria-label: browser computes consumer-owned native name",
+      "detail": "- slider \"Native ARIA label\": \"50\""
+    },
+    {
+      "label": "aria-label: source/value/endpoint metadata preserve native name",
+      "detail": "- slider \"Native ARIA label\": \"37\""
+    },
+    {
+      "label": "aria-label: runtime never writes consumer name attributes",
+      "detail": {}
+    },
+    {
+      "label": "aria-label: consumer can change native association during lifetime",
+      "detail": {}
+    },
+    {
+      "label": "aria-label: destroy preserves all external name/association edits",
+      "detail": {}
+    },
+    {
+      "label": "aria-labelledby: browser computes consumer-owned native name",
+      "detail": "- slider \"Native reference label\": \"50\""
+    },
+    {
+      "label": "aria-labelledby: source/value/endpoint metadata preserve native name",
+      "detail": "- slider \"Native reference label\": \"37\""
+    },
+    {
+      "label": "aria-labelledby: runtime never writes consumer name attributes",
+      "detail": {}
+    },
+    {
+      "label": "aria-labelledby: consumer can change native association during lifetime",
+      "detail": {}
+    },
+    {
+      "label": "aria-labelledby: destroy preserves all external name/association edits",
+      "detail": {}
+    },
+    {
+      "label": "image-alt label: browser computes consumer-owned native name",
+      "detail": "- slider \"Native image label\": \"50\""
+    },
+    {
+      "label": "image-alt label: source/value/endpoint metadata preserve native name",
+      "detail": "- slider \"Native image label\": \"37\""
+    },
+    {
+      "label": "image-alt label: runtime never writes consumer name attributes",
+      "detail": {}
+    },
+    {
+      "label": "image-alt label: consumer can change native association during lifetime",
+      "detail": {}
+    },
+    {
+      "label": "image-alt label: destroy preserves all external name/association edits",
+      "detail": {}
+    },
+    {
+      "label": "rich label: browser computes consumer-owned native name",
+      "detail": "- slider \"Rich native label\": \"50\""
+    },
+    {
+      "label": "rich label: source/value/endpoint metadata preserve native name",
+      "detail": "- slider \"Rich native label\": \"37\""
+    },
+    {
+      "label": "rich label: runtime never writes consumer name attributes",
+      "detail": {}
+    },
+    {
+      "label": "rich label: consumer can change native association during lifetime",
+      "detail": {}
+    },
+    {
+      "label": "rich label: destroy preserves all external name/association edits",
+      "detail": {}
+    },
+    {
+      "label": "ARIA reference: browser computes consumer-owned native name",
+      "detail": "- slider \"Native ARIA reference\": \"50\""
+    },
+    {
+      "label": "ARIA reference: source/value/endpoint metadata preserve native name",
+      "detail": "- slider \"Native ARIA reference\": \"37\""
+    },
+    {
+      "label": "ARIA reference: runtime never writes consumer name attributes",
+      "detail": {}
+    },
+    {
+      "label": "ARIA reference: consumer can change native association during lifetime",
+      "detail": {}
+    },
+    {
+      "label": "ARIA reference: destroy preserves all external name/association edits",
+      "detail": {}
+    },
+    {
+      "label": "title: browser computes consumer-owned native name",
+      "detail": "- slider \"Native title name\": \"50\""
+    },
+    {
+      "label": "title: source/value/endpoint metadata preserve native name",
+      "detail": "- slider \"Native title name\": \"37\""
+    },
+    {
+      "label": "title: runtime never writes consumer name attributes",
+      "detail": {}
+    },
+    {
+      "label": "title: consumer can change native association during lifetime",
+      "detail": {}
+    },
+    {
+      "label": "title: destroy preserves all external name/association edits",
+      "detail": {}
+    },
+    {
+      "label": "hidden-only label: browser computes consumer-owned native name (documented consumer error; setup does not validate)",
+      "detail": "- slider: \"50\""
+    },
+    {
+      "label": "hidden-only label: source/value/endpoint metadata preserve native name",
+      "detail": "- slider: \"37\""
+    },
+    {
+      "label": "hidden-only label: runtime never writes consumer name attributes",
+      "detail": {}
+    },
+    {
+      "label": "hidden-only label: consumer can change native association during lifetime",
+      "detail": {}
+    },
+    {
+      "label": "hidden-only label: destroy preserves all external name/association edits",
+      "detail": {}
+    },
+    {
+      "label": "absent: destroy restores owned style without adding/removing author attributes",
+      "detail": {
+        "before": "<div id=\"comparison\" class=\"bf-image-comparison\">\n  <div class=\"bf-image-comparison-stage\" style=\"block-size:180px\">\n    <div class=\"bf-image-comparison-layer is-second\" style=\"background:#132b49;color:white\">Second synthetic panel</div>\n    <div class=\"bf-image-comparison-layer is-first\" style=\"background:#efd09b;color:black\">First synthetic panel</div>\n    <div class=\"bf-image-comparison-seam\"></div>\n    <input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" aria-label=\"Synthetic image comparison\" value=\"27\">\n    <div class=\"bf-image-comparison-grip\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"currentColor\" aria-hidden=\"true\"><rect x=\"6\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"9.25\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"12.5\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect></svg></div>\n  </div>\n</div>",
+        "after": "<div id=\"comparison\" class=\"bf-image-comparison\">\n  <div class=\"bf-image-comparison-stage\" style=\"block-size:180px\">\n    <div class=\"bf-image-comparison-layer is-second\" style=\"background:#132b49;color:white\">Second synthetic panel</div>\n    <div class=\"bf-image-comparison-layer is-first\" style=\"background:#efd09b;color:black\">First synthetic panel</div>\n    <div class=\"bf-image-comparison-seam\"></div>\n    <input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" aria-label=\"Synthetic image comparison\" value=\"27\">\n    <div class=\"bf-image-comparison-grip\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"currentColor\" aria-hidden=\"true\"><rect x=\"6\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"9.25\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"12.5\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect></svg></div>\n  </div>\n</div>",
+        "styleBefore": null,
+        "styleAfter": null,
+        "position": "",
+        "color": ""
+      }
+    },
+    {
+      "label": "authored empty: destroy restores owned style without adding/removing author attributes",
+      "detail": {
+        "before": "<div id=\"comparison\" class=\"bf-image-comparison\" style=\"\">\n  <div class=\"bf-image-comparison-stage\" style=\"block-size:180px\">\n    <div class=\"bf-image-comparison-layer is-second\" style=\"background:#132b49;color:white\">Second synthetic panel</div>\n    <div class=\"bf-image-comparison-layer is-first\" style=\"background:#efd09b;color:black\">First synthetic panel</div>\n    <div class=\"bf-image-comparison-seam\"></div>\n    <input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" aria-label=\"Synthetic image comparison\" value=\"27\">\n    <div class=\"bf-image-comparison-grip\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"currentColor\" aria-hidden=\"true\"><rect x=\"6\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"9.25\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"12.5\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect></svg></div>\n  </div>\n</div>",
+        "after": "<div id=\"comparison\" class=\"bf-image-comparison\" style=\"\">\n  <div class=\"bf-image-comparison-stage\" style=\"block-size:180px\">\n    <div class=\"bf-image-comparison-layer is-second\" style=\"background:#132b49;color:white\">Second synthetic panel</div>\n    <div class=\"bf-image-comparison-layer is-first\" style=\"background:#efd09b;color:black\">First synthetic panel</div>\n    <div class=\"bf-image-comparison-seam\"></div>\n    <input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" aria-label=\"Synthetic image comparison\" value=\"27\">\n    <div class=\"bf-image-comparison-grip\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"currentColor\" aria-hidden=\"true\"><rect x=\"6\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"9.25\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"12.5\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect></svg></div>\n  </div>\n</div>",
+        "styleBefore": "",
+        "styleAfter": "",
+        "position": "",
+        "color": ""
+      }
+    },
+    {
+      "label": "authored style: destroy restores owned style without adding/removing author attributes",
+      "detail": {
+        "before": "<div id=\"comparison\" class=\"bf-image-comparison\" style=\"color: red; --bf-image-comparison-position: 31% !important;\">\n  <div class=\"bf-image-comparison-stage\" style=\"block-size:180px\">\n    <div class=\"bf-image-comparison-layer is-second\" style=\"background:#132b49;color:white\">Second synthetic panel</div>\n    <div class=\"bf-image-comparison-layer is-first\" style=\"background:#efd09b;color:black\">First synthetic panel</div>\n    <div class=\"bf-image-comparison-seam\"></div>\n    <input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" aria-label=\"Synthetic image comparison\" value=\"27\">\n    <div class=\"bf-image-comparison-grip\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"currentColor\" aria-hidden=\"true\"><rect x=\"6\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"9.25\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"12.5\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect></svg></div>\n  </div>\n</div>",
+        "after": "<div id=\"comparison\" class=\"bf-image-comparison\" style=\"color: red; --bf-image-comparison-position: 31% !important;\">\n  <div class=\"bf-image-comparison-stage\" style=\"block-size:180px\">\n    <div class=\"bf-image-comparison-layer is-second\" style=\"background:#132b49;color:white\">Second synthetic panel</div>\n    <div class=\"bf-image-comparison-layer is-first\" style=\"background:#efd09b;color:black\">First synthetic panel</div>\n    <div class=\"bf-image-comparison-seam\"></div>\n    <input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" aria-label=\"Synthetic image comparison\" value=\"27\">\n    <div class=\"bf-image-comparison-grip\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"currentColor\" aria-hidden=\"true\"><rect x=\"6\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"9.25\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"12.5\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect></svg></div>\n  </div>\n</div>",
+        "styleBefore": "color: red; --bf-image-comparison-position: 31% !important;",
+        "styleAfter": "color: red; --bf-image-comparison-position: 31% !important;",
+        "position": "31%",
+        "color": "red"
+      }
+    },
+    {
+      "label": "consumer added style: destroy restores owned style without adding/removing author attributes",
+      "detail": {
+        "before": "<div id=\"comparison\" class=\"bf-image-comparison\">\n  <div class=\"bf-image-comparison-stage\" style=\"block-size:180px\">\n    <div class=\"bf-image-comparison-layer is-second\" style=\"background:#132b49;color:white\">Second synthetic panel</div>\n    <div class=\"bf-image-comparison-layer is-first\" style=\"background:#efd09b;color:black\">First synthetic panel</div>\n    <div class=\"bf-image-comparison-seam\"></div>\n    <input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" aria-label=\"Synthetic image comparison\" value=\"27\">\n    <div class=\"bf-image-comparison-grip\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"currentColor\" aria-hidden=\"true\"><rect x=\"6\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"9.25\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"12.5\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect></svg></div>\n  </div>\n</div>",
+        "after": "<div id=\"comparison\" class=\"bf-image-comparison\" style=\"color: blue;\">\n  <div class=\"bf-image-comparison-stage\" style=\"block-size:180px\">\n    <div class=\"bf-image-comparison-layer is-second\" style=\"background:#132b49;color:white\">Second synthetic panel</div>\n    <div class=\"bf-image-comparison-layer is-first\" style=\"background:#efd09b;color:black\">First synthetic panel</div>\n    <div class=\"bf-image-comparison-seam\"></div>\n    <input class=\"bf-image-comparison-value\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" aria-label=\"Synthetic image comparison\" value=\"27\">\n    <div class=\"bf-image-comparison-grip\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"currentColor\" aria-hidden=\"true\"><rect x=\"6\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"9.25\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect><rect x=\"12.5\" y=\"3\" width=\"1.5\" height=\"14\" rx=\".75\"></rect></svg></div>\n  </div>\n</div>",
+        "styleBefore": null,
+        "styleAfter": "color: blue;",
+        "position": "",
+        "color": "blue"
+      }
+    }
+  ],
+  "errors": []
+}

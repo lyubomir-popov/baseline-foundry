@@ -1,0 +1,561 @@
+
+> baseline-foundry@0.2.1 qa:components
+> npm run build && tsx scripts/capture-component-screenshots.ts && tsx scripts/verify-component-baselines.ts
+
+
+> baseline-foundry@0.2.1 build
+> npm run build:theme && npm run build:lib
+
+
+> baseline-foundry@0.2.1 build:theme
+> tsx scripts/build-theme.ts
+
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\surfaces\documentation\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\surfaces\documentation\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\surfaces\documentation\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\surfaces\app\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\surfaces\app\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\surfaces\app\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\surfaces\os\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\surfaces\os\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\surfaces\os\fonts\UbuntuSans[wdth,wght].ttf
+Generated default theme tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\tokens.json
+Generated default theme css: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\styles.css
+Generated default theme surfaces: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\surfaces.json
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\editorial\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\editorial\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\editorial\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\editorial\surfaces\documentation\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\editorial\surfaces\documentation\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\editorial\surfaces\documentation\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\editorial\surfaces\app\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\editorial\surfaces\app\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\editorial\surfaces\app\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\editorial\surfaces\os\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\editorial\surfaces\os\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\editorial\surfaces\os\fonts\UbuntuSans[wdth,wght].ttf
+Generated tier "editorial"
+  tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\tiers\editorial\tokens.json
+  css:    H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\tiers\editorial\styles.css
+  surfaces: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\tiers\editorial\surfaces.json
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\documentation\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\documentation\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\documentation\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\documentation\surfaces\editorial\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\documentation\surfaces\editorial\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\documentation\surfaces\editorial\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\documentation\surfaces\app\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\documentation\surfaces\app\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\documentation\surfaces\app\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\documentation\surfaces\os\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\documentation\surfaces\os\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\documentation\surfaces\os\fonts\UbuntuSans[wdth,wght].ttf
+Generated tier "documentation"
+  tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\tiers\documentation\tokens.json
+  css:    H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\tiers\documentation\styles.css
+  surfaces: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\tiers\documentation\surfaces.json
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\app\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\app\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\app\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\app\surfaces\editorial\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\app\surfaces\editorial\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\app\surfaces\editorial\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\app\surfaces\documentation\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\app\surfaces\documentation\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\app\surfaces\documentation\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\app\surfaces\os\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\app\surfaces\os\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\app\surfaces\os\fonts\UbuntuSans[wdth,wght].ttf
+Generated tier "app"
+  tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\tiers\app\tokens.json
+  css:    H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\tiers\app\styles.css
+  surfaces: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\tiers\app\surfaces.json
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\os\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\os\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\os\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\os\surfaces\editorial\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\os\surfaces\editorial\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\os\surfaces\editorial\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\os\surfaces\documentation\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\os\surfaces\documentation\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\os\surfaces\documentation\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\os\surfaces\app\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\os\surfaces\app\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\tiers\os\surfaces\app\fonts\UbuntuSans[wdth,wght].ttf
+Generated tier "os"
+  tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\tiers\os\tokens.json
+  css:    H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\tiers\os\styles.css
+  surfaces: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\tiers\os\surfaces.json
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\prose\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\prose\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\prose\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\prose\surfaces\documentation\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\prose\surfaces\documentation\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\prose\surfaces\documentation\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\prose\surfaces\app\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\prose\surfaces\app\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\prose\surfaces\app\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\prose\surfaces\os\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\prose\surfaces\os\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\prose\surfaces\os\fonts\UbuntuSans[wdth,wght].ttf
+Generated preset "prose"
+  tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\presets\prose\tokens.json
+  css:    H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\presets\prose\styles.css
+  surfaces: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\presets\prose\surfaces.json
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\app-tier\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\app-tier\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\app-tier\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\app-tier\surfaces\editorial\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\app-tier\surfaces\editorial\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\app-tier\surfaces\editorial\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\app-tier\surfaces\documentation\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\app-tier\surfaces\documentation\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\app-tier\surfaces\documentation\fonts\UbuntuSans[wdth,wght].ttf
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\app-tier\surfaces\os\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\app-tier\surfaces\os\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\app-tier\surfaces\os\fonts\UbuntuSans[wdth,wght].ttf
+Generated preset "app-tier"
+  tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\presets\app-tier\tokens.json
+  css:    H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\presets\app-tier\styles.css
+  surfaces: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\presets\app-tier\surfaces.json
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\experiments\ibm-plex-engine-smoke\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\experiments\ibm-plex-engine-smoke\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\experiments\ibm-plex-engine-smoke\fonts\IBMPlexSansVar-Roman.woff2
+✅ Generated tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\experiments\ibm-plex-engine-smoke\surfaces\ubuntu-engine-smoke\tokens.json
+✅ Generated HTML example: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\experiments\ibm-plex-engine-smoke\surfaces\ubuntu-engine-smoke\index.html
+✅ Copied font: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\generated\baseline\experiments\ibm-plex-engine-smoke\surfaces\ubuntu-engine-smoke\fonts\UbuntuSans[wdth,wght].ttf
+Generated experiment "ibm-plex-engine-smoke"
+  tokens: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\experiments\ibm-plex-engine-smoke\tokens.json
+  css:    H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\experiments\ibm-plex-engine-smoke\styles.css
+  surfaces: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\dist\experiments\ibm-plex-engine-smoke\surfaces.json
+
+> baseline-foundry@0.2.1 build:lib
+> tsc -p tsconfig.json
+
+Captured typography: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\typography.png
+Captured prose: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\prose.png
+Captured layout: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\layout.png
+Captured grid: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\grid.png
+Captured docs-layout: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\docs-layout.png
+Captured page-shell: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\page-shell.png
+Captured application-shell: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\application-shell.png
+Captured application-layout: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\application-layout.png
+Captured stage-shell: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\stage-shell.png
+Captured drawer-panel: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\drawer-panel.png
+Captured form-atlas: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\form-atlas.png
+Captured button: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\button.png
+Captured actions: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\actions.png
+Captured text-input: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\text-input.png
+Captured color-input: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\color-input.png
+Captured select: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\select.png
+Captured checkbox: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\checkbox.png
+Captured radio: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\radio.png
+Captured range: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\range.png
+Captured file-input: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\file-input.png
+Captured validation: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\validation.png
+Captured credential-validation: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\credential-validation.png
+Captured switch: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\switch.png
+Captured chip: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\chip.png
+Captured badge: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\badge.png
+Captured status-label: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\status-label.png
+Captured icon: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\icon.png
+Captured list: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\list.png
+Captured inline-list: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\inline-list.png
+Captured tiered-list: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\tiered-list.png
+Captured cta-block: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\cta-block.png
+Captured basic-section: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\basic-section.png
+Captured cta-section: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\cta-section.png
+Captured text-spotlight: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\text-spotlight.png
+Captured hero: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\hero.png
+Captured quote-wrapper: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\quote-wrapper.png
+Captured rich-list-horizontal: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\rich-list-horizontal.png
+Captured rich-list-vertical: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\rich-list-vertical.png
+Captured tab-section: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\tab-section.png
+Captured sticky-footer: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\sticky-footer.png
+Captured equal-height-row: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\equal-height-row.png
+Captured equal-heights: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\equal-heights.png
+Captured empty-state: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\empty-state.png
+Captured figure: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\figure.png
+Captured image-comparison: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\image-comparison.png
+Captured aspect: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\aspect.png
+Captured table: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\table.png
+Captured table-sortable: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\table-sortable.png
+Captured table-expanding: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\table-expanding.png
+Captured table-mobile-card: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\table-mobile-card.png
+Captured logo-section: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\logo-section.png
+Captured linked-logo-section: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\linked-logo-section.png
+Captured media-object: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\media-object.png
+Captured data-spotlight: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\data-spotlight.png
+Captured divided-section: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\divided-section.png
+Captured table-of-contents: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\table-of-contents.png
+Captured search-box: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\search-box.png
+Captured search-and-filter: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\search-and-filter.png
+Captured code-snippet: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\code-snippet.png
+Captured list-tree: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\list-tree.png
+Captured tabs: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\tabs.png
+Captured panel-tabs: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\panel-tabs.png
+Captured accordion: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\accordion.png
+Captured side-navigation: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\side-navigation.png
+Captured top-navigation: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\top-navigation.png
+Captured in-page-navigation: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\in-page-navigation.png
+Captured navigation-reduced: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\navigation-reduced.png
+Captured engine-smoke: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\engine-smoke.png
+Captured engine-illustration: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\engine-illustration.png
+Captured modal: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\modal.png
+Captured choice-row: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\choice-row.png
+Captured inline-options: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\inline-options.png
+Captured segmented-control: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\segmented-control.png
+Captured breadcrumbs: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\breadcrumbs.png
+Captured pagination: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\pagination.png
+Captured article-pagination: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\article-pagination.png
+Captured skip-link: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\skip-link.png
+Captured contextual-menu: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\contextual-menu.png
+Captured tooltip: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\tooltip.png
+Captured cards: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\cards.png
+Captured content-card: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\content-card.png
+Captured option-card: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\option-card.png
+Captured notice: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\notice.png
+Captured notification: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\notification.png
+Captured panel-pressure: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\panel-pressure.png
+Captured editorial-pressure: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\editorial-pressure.png
+Captured narrow-panel: H:\WSL_dev_projects\baseline-foundry-worktrees\feat-030-image-comparison\tmp\screenshots\components\narrow-panel.png
+Verified typography [editorial]: 10 checks, 0 failures
+Verified typography [documentation]: 10 checks, 0 failures
+Verified typography [app]: 10 checks, 0 failures
+Verified typography [os]: 10 checks, 0 failures
+Verified prose [editorial]: 22 checks, 0 failures
+Verified prose [documentation]: 22 checks, 0 failures
+Verified prose [app]: 22 checks, 0 failures
+Verified prose [os]: 22 checks, 0 failures
+Verified layout [editorial]: 17 checks, 0 failures
+Verified layout [documentation]: 17 checks, 0 failures
+Verified layout [app]: 17 checks, 0 failures
+Verified layout [os]: 17 checks, 0 failures
+Verified grid [editorial]: 18 checks, 0 failures
+Verified grid [documentation]: 18 checks, 0 failures
+Verified grid [app]: 18 checks, 0 failures
+Verified grid [os]: 18 checks, 0 failures
+Verified docs-layout [editorial]: 8 checks, 0 failures
+Verified docs-layout [documentation]: 8 checks, 0 failures
+Verified docs-layout [app]: 8 checks, 0 failures
+Verified docs-layout [os]: 8 checks, 0 failures
+Verified page-shell [editorial]: 6 checks, 0 failures
+Verified page-shell [documentation]: 6 checks, 0 failures
+Verified page-shell [app]: 6 checks, 0 failures
+Verified page-shell [os]: 6 checks, 0 failures
+Verified application-shell [editorial]: 12 checks, 0 failures
+Verified application-shell [documentation]: 12 checks, 0 failures
+Verified application-shell [app]: 12 checks, 0 failures
+Verified application-shell [os]: 12 checks, 0 failures
+Verified application-layout [app]: 35 checks, 0 failures
+Verified stage-shell [editorial]: 1 checks, 0 failures
+Verified stage-shell [documentation]: 1 checks, 0 failures
+Verified stage-shell [app]: 1 checks, 0 failures
+Verified stage-shell [os]: 1 checks, 0 failures
+Verified drawer-panel [editorial]: 21 checks, 0 failures
+Verified drawer-panel [documentation]: 21 checks, 0 failures
+Verified drawer-panel [app]: 21 checks, 0 failures
+Verified drawer-panel [os]: 21 checks, 0 failures
+Verified form-atlas [editorial]: 70 checks, 0 failures
+Verified form-atlas [documentation]: 70 checks, 0 failures
+Verified form-atlas [app]: 70 checks, 0 failures
+Verified form-atlas [os]: 70 checks, 0 failures
+Verified button [editorial]: 34 checks, 0 failures
+Verified button [documentation]: 34 checks, 0 failures
+Verified button [app]: 34 checks, 0 failures
+Verified button [os]: 34 checks, 0 failures
+Verified actions [editorial]: 23 checks, 0 failures
+Verified actions [documentation]: 23 checks, 0 failures
+Verified actions [app]: 23 checks, 0 failures
+Verified actions [os]: 23 checks, 0 failures
+Verified text-input [editorial]: 4 checks, 0 failures
+Verified text-input [documentation]: 4 checks, 0 failures
+Verified text-input [app]: 4 checks, 0 failures
+Verified text-input [os]: 4 checks, 0 failures
+Verified color-input [editorial]: 8 checks, 0 failures
+Verified color-input [documentation]: 8 checks, 0 failures
+Verified color-input [app]: 8 checks, 0 failures
+Verified color-input [os]: 8 checks, 0 failures
+Verified select [editorial]: 6 checks, 0 failures
+Verified select [documentation]: 6 checks, 0 failures
+Verified select [app]: 6 checks, 0 failures
+Verified select [os]: 6 checks, 0 failures
+Verified checkbox [editorial]: 5 checks, 0 failures
+Verified checkbox [documentation]: 5 checks, 0 failures
+Verified checkbox [app]: 5 checks, 0 failures
+Verified checkbox [os]: 5 checks, 0 failures
+Verified radio [editorial]: 5 checks, 0 failures
+Verified radio [documentation]: 5 checks, 0 failures
+Verified radio [app]: 5 checks, 0 failures
+Verified radio [os]: 5 checks, 0 failures
+Verified range [editorial]: 11 checks, 0 failures
+Verified range [documentation]: 11 checks, 0 failures
+Verified range [app]: 11 checks, 0 failures
+Verified range [os]: 11 checks, 0 failures
+Verified file-input [editorial]: 6 checks, 0 failures
+Verified file-input [documentation]: 6 checks, 0 failures
+Verified file-input [app]: 6 checks, 0 failures
+Verified file-input [os]: 6 checks, 0 failures
+Verified validation [editorial]: 16 checks, 0 failures
+Verified validation [documentation]: 16 checks, 0 failures
+Verified validation [app]: 16 checks, 0 failures
+Verified validation [os]: 16 checks, 0 failures
+Verified credential-validation [editorial]: 20 checks, 0 failures
+Verified credential-validation [documentation]: 20 checks, 0 failures
+Verified credential-validation [app]: 20 checks, 0 failures
+Verified credential-validation [os]: 20 checks, 0 failures
+Verified switch [editorial]: 3 checks, 0 failures
+Verified switch [documentation]: 3 checks, 0 failures
+Verified switch [app]: 3 checks, 0 failures
+Verified switch [os]: 3 checks, 0 failures
+Verified chip [editorial]: 14 checks, 0 failures
+Verified chip [documentation]: 14 checks, 0 failures
+Verified chip [app]: 14 checks, 0 failures
+Verified chip [os]: 14 checks, 0 failures
+Verified badge [editorial]: 7 checks, 0 failures
+Verified badge [documentation]: 7 checks, 0 failures
+Verified badge [app]: 7 checks, 0 failures
+Verified badge [os]: 7 checks, 0 failures
+Verified status-label [editorial]: 7 checks, 0 failures
+Verified status-label [documentation]: 7 checks, 0 failures
+Verified status-label [app]: 7 checks, 0 failures
+Verified status-label [os]: 7 checks, 0 failures
+Verified icon [editorial]: 21 checks, 0 failures
+Verified icon [documentation]: 21 checks, 0 failures
+Verified icon [app]: 21 checks, 0 failures
+Verified icon [os]: 21 checks, 0 failures
+Verified list [editorial]: 28 checks, 0 failures
+Verified list [documentation]: 28 checks, 0 failures
+Verified list [app]: 28 checks, 0 failures
+Verified list [os]: 28 checks, 0 failures
+Verified inline-list [editorial]: 17 checks, 0 failures
+Verified inline-list [documentation]: 17 checks, 0 failures
+Verified inline-list [app]: 17 checks, 0 failures
+Verified inline-list [os]: 17 checks, 0 failures
+Verified tiered-list [editorial]: 67 checks, 0 failures
+Verified tiered-list [documentation]: 67 checks, 0 failures
+Verified tiered-list [app]: 67 checks, 0 failures
+Verified tiered-list [os]: 67 checks, 0 failures
+Verified cta-block [editorial]: 15 checks, 0 failures
+Verified cta-block [documentation]: 15 checks, 0 failures
+Verified cta-block [app]: 15 checks, 0 failures
+Verified cta-block [os]: 15 checks, 0 failures
+Verified basic-section [editorial]: 20 checks, 0 failures
+Verified basic-section [documentation]: 20 checks, 0 failures
+Verified basic-section [app]: 20 checks, 0 failures
+Verified basic-section [os]: 20 checks, 0 failures
+Verified cta-section [editorial]: 11 checks, 0 failures
+Verified cta-section [documentation]: 11 checks, 0 failures
+Verified cta-section [app]: 11 checks, 0 failures
+Verified cta-section [os]: 11 checks, 0 failures
+Verified text-spotlight [editorial]: 15 checks, 0 failures
+Verified text-spotlight [documentation]: 15 checks, 0 failures
+Verified text-spotlight [app]: 15 checks, 0 failures
+Verified text-spotlight [os]: 15 checks, 0 failures
+Verified hero [editorial]: 30 checks, 0 failures
+Verified hero [documentation]: 30 checks, 0 failures
+Verified hero [app]: 30 checks, 0 failures
+Verified hero [os]: 30 checks, 0 failures
+Verified quote-wrapper [editorial]: 18 checks, 0 failures
+Verified quote-wrapper [documentation]: 18 checks, 0 failures
+Verified quote-wrapper [app]: 18 checks, 0 failures
+Verified quote-wrapper [os]: 18 checks, 0 failures
+Verified rich-list-horizontal [editorial]: 40 checks, 0 failures
+Verified rich-list-horizontal [documentation]: 40 checks, 0 failures
+Verified rich-list-horizontal [app]: 40 checks, 0 failures
+Verified rich-list-horizontal [os]: 40 checks, 0 failures
+Verified rich-list-vertical [editorial]: 35 checks, 0 failures
+Verified rich-list-vertical [documentation]: 35 checks, 0 failures
+Verified rich-list-vertical [app]: 35 checks, 0 failures
+Verified rich-list-vertical [os]: 35 checks, 0 failures
+Verified tab-section [editorial]: 38 checks, 0 failures
+Verified tab-section [documentation]: 38 checks, 0 failures
+Verified tab-section [app]: 38 checks, 0 failures
+Verified tab-section [os]: 38 checks, 0 failures
+Verified sticky-footer [editorial]: 36 checks, 0 failures
+Verified sticky-footer [documentation]: 36 checks, 0 failures
+Verified sticky-footer [app]: 36 checks, 0 failures
+Verified sticky-footer [os]: 36 checks, 0 failures
+Verified equal-height-row [editorial]: 47 checks, 0 failures
+Verified equal-height-row [documentation]: 47 checks, 0 failures
+Verified equal-height-row [app]: 47 checks, 0 failures
+Verified equal-height-row [os]: 47 checks, 0 failures
+Verified equal-heights [editorial]: 44 checks, 0 failures
+Verified equal-heights [documentation]: 44 checks, 0 failures
+Verified equal-heights [app]: 44 checks, 0 failures
+Verified equal-heights [os]: 44 checks, 0 failures
+Verified empty-state [editorial]: 18 checks, 0 failures
+Verified empty-state [documentation]: 18 checks, 0 failures
+Verified empty-state [app]: 18 checks, 0 failures
+Verified empty-state [os]: 18 checks, 0 failures
+Verified figure [editorial]: 18 checks, 0 failures
+Verified figure [documentation]: 18 checks, 0 failures
+Verified figure [app]: 18 checks, 0 failures
+Verified figure [os]: 18 checks, 0 failures
+Verified image-comparison [editorial]: 7 checks, 0 failures
+Verified image-comparison [documentation]: 7 checks, 0 failures
+Verified image-comparison [app]: 7 checks, 0 failures
+Verified image-comparison [os]: 7 checks, 0 failures
+Verified aspect [editorial]: 27 checks, 0 failures
+Verified aspect [documentation]: 27 checks, 0 failures
+Verified aspect [app]: 27 checks, 0 failures
+Verified aspect [os]: 27 checks, 0 failures
+Verified table [editorial]: 9 checks, 0 failures
+Verified table [documentation]: 9 checks, 0 failures
+Verified table [app]: 9 checks, 0 failures
+Verified table [os]: 9 checks, 0 failures
+Verified table-sortable [editorial]: 7 checks, 0 failures
+Verified table-sortable [documentation]: 7 checks, 0 failures
+Verified table-sortable [app]: 7 checks, 0 failures
+Verified table-sortable [os]: 7 checks, 0 failures
+Verified table-expanding [editorial]: 6 checks, 0 failures
+Verified table-expanding [documentation]: 6 checks, 0 failures
+Verified table-expanding [app]: 6 checks, 0 failures
+Verified table-expanding [os]: 6 checks, 0 failures
+Verified table-mobile-card [editorial]: 8 checks, 0 failures
+Verified table-mobile-card [documentation]: 8 checks, 0 failures
+Verified table-mobile-card [app]: 8 checks, 0 failures
+Verified table-mobile-card [os]: 8 checks, 0 failures
+Verified logo-section [editorial]: 8 checks, 0 failures
+Verified logo-section [documentation]: 8 checks, 0 failures
+Verified logo-section [app]: 8 checks, 0 failures
+Verified logo-section [os]: 8 checks, 0 failures
+Verified linked-logo-section [editorial]: 11 checks, 0 failures
+Verified linked-logo-section [documentation]: 11 checks, 0 failures
+Verified linked-logo-section [app]: 11 checks, 0 failures
+Verified linked-logo-section [os]: 11 checks, 0 failures
+Verified media-object [editorial]: 12 checks, 0 failures
+Verified media-object [documentation]: 12 checks, 0 failures
+Verified media-object [app]: 12 checks, 0 failures
+Verified media-object [os]: 12 checks, 0 failures
+Verified data-spotlight [editorial]: 58 checks, 0 failures
+Verified data-spotlight [documentation]: 58 checks, 0 failures
+Verified data-spotlight [app]: 58 checks, 0 failures
+Verified data-spotlight [os]: 58 checks, 0 failures
+Verified divided-section [editorial]: 21 checks, 0 failures
+Verified divided-section [documentation]: 21 checks, 0 failures
+Verified divided-section [app]: 21 checks, 0 failures
+Verified divided-section [os]: 21 checks, 0 failures
+Verified table-of-contents [editorial]: 4 checks, 0 failures
+Verified table-of-contents [documentation]: 4 checks, 0 failures
+Verified table-of-contents [app]: 4 checks, 0 failures
+Verified table-of-contents [os]: 4 checks, 0 failures
+Verified search-box [editorial]: 2 checks, 0 failures
+Verified search-box [documentation]: 2 checks, 0 failures
+Verified search-box [app]: 2 checks, 0 failures
+Verified search-box [os]: 2 checks, 0 failures
+Verified search-and-filter [editorial]: 12 checks, 0 failures
+Verified search-and-filter [documentation]: 12 checks, 0 failures
+Verified search-and-filter [app]: 12 checks, 0 failures
+Verified search-and-filter [os]: 12 checks, 0 failures
+Verified code-snippet [editorial]: 16 checks, 0 failures
+Verified code-snippet [documentation]: 16 checks, 0 failures
+Verified code-snippet [app]: 16 checks, 0 failures
+Verified code-snippet [os]: 16 checks, 0 failures
+Verified list-tree [editorial]: 10 checks, 0 failures
+Verified list-tree [documentation]: 10 checks, 0 failures
+Verified list-tree [app]: 10 checks, 0 failures
+Verified list-tree [os]: 10 checks, 0 failures
+Verified tabs [editorial]: 14 checks, 0 failures
+Verified tabs [documentation]: 14 checks, 0 failures
+Verified tabs [app]: 14 checks, 0 failures
+Verified tabs [os]: 14 checks, 0 failures
+Verified panel-tabs [editorial]: 6 checks, 0 failures
+Verified panel-tabs [documentation]: 6 checks, 0 failures
+Verified panel-tabs [app]: 6 checks, 0 failures
+Verified panel-tabs [os]: 6 checks, 0 failures
+Verified accordion [editorial]: 6 checks, 0 failures
+Verified accordion [documentation]: 6 checks, 0 failures
+Verified accordion [app]: 6 checks, 0 failures
+Verified accordion [os]: 6 checks, 0 failures
+Verified side-navigation [app]: 29 checks, 0 failures
+Verified top-navigation [editorial]: 11 checks, 0 failures
+Verified top-navigation [documentation]: 11 checks, 0 failures
+Verified top-navigation [app]: 11 checks, 0 failures
+Verified top-navigation [os]: 11 checks, 0 failures
+Verified in-page-navigation [editorial]: 6 checks, 0 failures
+Verified in-page-navigation [documentation]: 6 checks, 0 failures
+Verified in-page-navigation [app]: 6 checks, 0 failures
+Verified in-page-navigation [os]: 6 checks, 0 failures
+Verified navigation-reduced [editorial]: 12 checks, 0 failures
+Verified navigation-reduced [documentation]: 12 checks, 0 failures
+Verified navigation-reduced [app]: 12 checks, 0 failures
+Verified navigation-reduced [os]: 12 checks, 0 failures
+Verified engine-smoke [ibm-plex-engine-smoke]: 27 checks, 0 failures
+Verified engine-smoke [ubuntu-engine-smoke]: 27 checks, 0 failures
+Skipped engine-illustration: screenshot-only page; structural assertions run in test:build
+Verified modal [editorial]: 7 checks, 0 failures
+Verified modal [documentation]: 7 checks, 0 failures
+Verified modal [app]: 7 checks, 0 failures
+Verified modal [os]: 7 checks, 0 failures
+Verified choice-row [editorial]: 5 checks, 0 failures
+Verified choice-row [documentation]: 5 checks, 0 failures
+Verified choice-row [app]: 5 checks, 0 failures
+Verified choice-row [os]: 5 checks, 0 failures
+Verified inline-options [editorial]: 7 checks, 0 failures
+Verified inline-options [documentation]: 7 checks, 0 failures
+Verified inline-options [app]: 7 checks, 0 failures
+Verified inline-options [os]: 7 checks, 0 failures
+Verified segmented-control [editorial]: 5 checks, 0 failures
+Verified segmented-control [documentation]: 5 checks, 0 failures
+Verified segmented-control [app]: 5 checks, 0 failures
+Verified segmented-control [os]: 5 checks, 0 failures
+Verified breadcrumbs [editorial]: 3 checks, 0 failures
+Verified breadcrumbs [documentation]: 3 checks, 0 failures
+Verified breadcrumbs [app]: 3 checks, 0 failures
+Verified breadcrumbs [os]: 3 checks, 0 failures
+Verified pagination [editorial]: 9 checks, 0 failures
+Verified pagination [documentation]: 9 checks, 0 failures
+Verified pagination [app]: 9 checks, 0 failures
+Verified pagination [os]: 9 checks, 0 failures
+Verified article-pagination [editorial]: 22 checks, 0 failures
+Verified article-pagination [documentation]: 22 checks, 0 failures
+Verified article-pagination [app]: 22 checks, 0 failures
+Verified article-pagination [os]: 22 checks, 0 failures
+Verified skip-link [editorial]: 9 checks, 0 failures
+Verified skip-link [documentation]: 9 checks, 0 failures
+Verified skip-link [app]: 9 checks, 0 failures
+Verified skip-link [os]: 9 checks, 0 failures
+Verified contextual-menu [editorial]: 6 checks, 0 failures
+Verified contextual-menu [documentation]: 6 checks, 0 failures
+Verified contextual-menu [app]: 6 checks, 0 failures
+Verified contextual-menu [os]: 6 checks, 0 failures
+Verified tooltip [editorial]: 3 checks, 0 failures
+Verified tooltip [documentation]: 3 checks, 0 failures
+Verified tooltip [app]: 3 checks, 0 failures
+Verified tooltip [os]: 3 checks, 0 failures
+Verified cards [editorial]: 15 checks, 0 failures
+Verified cards [documentation]: 15 checks, 0 failures
+Verified cards [app]: 15 checks, 0 failures
+Verified cards [os]: 15 checks, 0 failures
+Verified content-card [editorial]: 20 checks, 0 failures
+Verified content-card [documentation]: 20 checks, 0 failures
+Verified content-card [app]: 20 checks, 0 failures
+Verified content-card [os]: 20 checks, 0 failures
+Verified option-card [editorial]: 5 checks, 0 failures
+Verified option-card [documentation]: 5 checks, 0 failures
+Verified option-card [app]: 5 checks, 0 failures
+Verified option-card [os]: 5 checks, 0 failures
+Verified notice [editorial]: 18 checks, 0 failures
+Verified notice [documentation]: 18 checks, 0 failures
+Verified notice [app]: 18 checks, 0 failures
+Verified notice [os]: 18 checks, 0 failures
+Verified notification [editorial]: 10 checks, 0 failures
+Verified notification [documentation]: 10 checks, 0 failures
+Verified notification [app]: 10 checks, 0 failures
+Verified notification [os]: 10 checks, 0 failures
+Verified panel-pressure [editorial]: 28 checks, 0 failures
+Verified panel-pressure [documentation]: 28 checks, 0 failures
+Verified panel-pressure [app]: 28 checks, 0 failures
+Verified panel-pressure [os]: 28 checks, 0 failures
+Verified editorial-pressure [editorial]: 11 checks, 0 failures
+Verified editorial-pressure [documentation]: 11 checks, 0 failures
+Verified editorial-pressure [app]: 11 checks, 0 failures
+Verified editorial-pressure [os]: 11 checks, 0 failures
+Verified narrow-panel [editorial]: 16 checks, 0 failures
+Verified narrow-panel [documentation]: 16 checks, 0 failures
+Verified narrow-panel [app]: 16 checks, 0 failures
+Verified narrow-panel [os]: 16 checks, 0 failures

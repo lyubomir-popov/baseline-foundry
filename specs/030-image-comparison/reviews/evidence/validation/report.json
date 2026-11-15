@@ -1,0 +1,333 @@
+{
+  "rows": [
+    {
+      "theme": "light",
+      "tier": "editorial",
+      "dim": {
+        "firstBg": "rgb(255, 255, 255)",
+        "secondBg": "rgb(255, 255, 255)",
+        "firstImg": 320,
+        "secondImg": 160,
+        "firstBgInline": "",
+        "secondBgInline": ""
+      },
+      "pixels": {
+        "canvas": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "override": {
+        "canvas": [
+          20,
+          40,
+          220,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "ok": true
+    },
+    {
+      "theme": "light",
+      "tier": "documentation",
+      "dim": {
+        "firstBg": "rgb(255, 255, 255)",
+        "secondBg": "rgb(255, 255, 255)",
+        "firstImg": 320,
+        "secondImg": 160,
+        "firstBgInline": "",
+        "secondBgInline": ""
+      },
+      "pixels": {
+        "canvas": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "override": {
+        "canvas": [
+          20,
+          40,
+          220,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "ok": true
+    },
+    {
+      "theme": "light",
+      "tier": "app",
+      "dim": {
+        "firstBg": "rgb(255, 255, 255)",
+        "secondBg": "rgb(255, 255, 255)",
+        "firstImg": 320,
+        "secondImg": 160,
+        "firstBgInline": "",
+        "secondBgInline": ""
+      },
+      "pixels": {
+        "canvas": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "override": {
+        "canvas": [
+          20,
+          40,
+          220,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "ok": true
+    },
+    {
+      "theme": "light",
+      "tier": "os",
+      "dim": {
+        "firstBg": "rgb(255, 255, 255)",
+        "secondBg": "rgb(255, 255, 255)",
+        "firstImg": 320,
+        "secondImg": 160,
+        "firstBgInline": "",
+        "secondBgInline": ""
+      },
+      "pixels": {
+        "canvas": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "override": {
+        "canvas": [
+          20,
+          40,
+          220,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "ok": true
+    },
+    {
+      "theme": "dark",
+      "tier": "editorial",
+      "dim": {
+        "firstBg": "rgb(38, 38, 38)",
+        "secondBg": "rgb(38, 38, 38)",
+        "firstImg": 320,
+        "secondImg": 160,
+        "firstBgInline": "",
+        "secondBgInline": ""
+      },
+      "pixels": {
+        "canvas": [
+          38,
+          38,
+          38,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "override": {
+        "canvas": [
+          20,
+          40,
+          220,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "ok": true
+    },
+    {
+      "theme": "dark",
+      "tier": "documentation",
+      "dim": {
+        "firstBg": "rgb(38, 38, 38)",
+        "secondBg": "rgb(38, 38, 38)",
+        "firstImg": 320,
+        "secondImg": 160,
+        "firstBgInline": "",
+        "secondBgInline": ""
+      },
+      "pixels": {
+        "canvas": [
+          38,
+          38,
+          38,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "override": {
+        "canvas": [
+          20,
+          40,
+          220,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "ok": true
+    },
+    {
+      "theme": "dark",
+      "tier": "app",
+      "dim": {
+        "firstBg": "rgb(38, 38, 38)",
+        "secondBg": "rgb(38, 38, 38)",
+        "firstImg": 320,
+        "secondImg": 160,
+        "firstBgInline": "",
+        "secondBgInline": ""
+      },
+      "pixels": {
+        "canvas": [
+          38,
+          38,
+          38,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "override": {
+        "canvas": [
+          20,
+          40,
+          220,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "ok": true
+    },
+    {
+      "theme": "dark",
+      "tier": "os",
+      "dim": {
+        "firstBg": "rgb(38, 38, 38)",
+        "secondBg": "rgb(38, 38, 38)",
+        "firstImg": 320,
+        "secondImg": 160,
+        "firstBgInline": "",
+        "secondBgInline": ""
+      },
+      "pixels": {
+        "canvas": [
+          38,
+          38,
+          38,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "override": {
+        "canvas": [
+          20,
+          40,
+          220,
+          255
+        ],
+        "red": [
+          220,
+          30,
+          30,
+          255
+        ]
+      },
+      "ok": true
+    }
+  ],
+  "errors": []
+}

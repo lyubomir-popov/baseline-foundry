@@ -74,7 +74,8 @@ async function main(): Promise<void> {
       const build = await import("baseline-foundry/build");
       const presets = await import("baseline-foundry/presets");
       const types = await import("baseline-foundry/types");
-      assert(Object.keys(root).length === 30, "Expected 30 root runtime exports.");
+      assert(Object.keys(root).length === 31, "Expected 31 root runtime exports.");
+      assert(typeof root.setupImageComparison === "function", "Expected public image comparison runtime.");
       assert(typeof build.buildThemeFromConfig === "function", "Expected public build API.");
       assert(Array.isArray(presets.tierNames) && presets.tierNames.length === 4, "Expected four-tier preset registry.");
       assert(typeof types === "object", "Expected public types runtime module.");

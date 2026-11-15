@@ -54,6 +54,7 @@ export const componentPages: ComponentPage[] = [
   { name: "equal-heights", route: "/demo/components/equal-heights.html", captureProfile: "wide" },
   { name: "empty-state", route: "/demo/components/empty-state.html", captureProfile: "wide" },
   { name: "figure", route: "/demo/components/figure.html" },
+  { name: "image-comparison", route: "/demo/components/image-comparison.html" },
   { name: "aspect", route: "/demo/components/aspect.html" },
   { name: "table", route: "/demo/components/table.html", captureProfile: "wide" },
   { name: "table-sortable", route: "/demo/components/table-sortable.html", captureProfile: "wide" },

@@ -1,0 +1,25 @@
+{
+  "label": "after",
+  "cssSha256": "378225f35294851017d32cb9ad4672b20b51c92dc27cff02d7d3db323ab2c410",
+  "value": "100",
+  "layers": [
+    {
+      "background": "rgb(255, 255, 255)",
+      "clip": "none"
+    },
+    {
+      "background": "rgb(255, 255, 255)",
+      "clip": "inset(0px 0% 0px 0px)"
+    }
+  ],
+  "fit": [
+    {
+      "fit": "contain",
+      "loaded": true
+    },
+    {
+      "fit": "contain",
+      "loaded": true
+    }
+  ]
+}

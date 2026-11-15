@@ -1,3 +1,4 @@
+import { imageComparisonCss } from "./css-components/image-comparison.js";
 import { buttonActionsCss } from "./css-components/button-actions.js";
 import { articlePaginationCss } from "./css-components/article-pagination.js";
 import { applicationGeometryCss } from "./css-components/application-geometry.js";
@@ -959,6 +960,8 @@ ${ctaFigureAspectCss()}
 ${editorialContentCss({ noticeTitleTypeStyles: typeStyles(h4, { includeCase: false }) })}
 
 ${staticContentPortsCss()}
+
+${imageComparisonCss()}
 
 ${interactiveFeedbackCss()}
 
